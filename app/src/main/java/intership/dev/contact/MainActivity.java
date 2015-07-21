@@ -1,16 +1,10 @@
 package intership.dev.contact;
 
-import android.support.v4.app.FragmentManager;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 
@@ -19,6 +13,7 @@ import java.util.ArrayList;
  */
 public class MainActivity extends FragmentActivity implements ListViewContactsAdapter.OnClickListViewContacts {
 
+    private HeaderBar hbListContacts;
     private ListView mLvContacts;
     private ListViewContactsAdapter mListViewContactsAdapter;
     private ArrayList<Contact> mContacts;
@@ -34,9 +29,11 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
      * initialize views from layout
      */
     private void initialize() {
+        hbListContacts = (HeaderBar) findViewById(R.id.hbListContacts);
         mLvContacts = (ListView) findViewById(R.id.lvContacts);
 
         mContacts = new ArrayList<>();
+        // example data
         for (int i = 0; i < 10; i++) {
             mContacts.add(new Contact("Thomas Anders", "Thomas Anders", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar1)));
             mContacts.add(new Contact("Valery Meladze", "Valery Meladze", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar2)));
@@ -54,13 +51,22 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
     public void onClickBtnEdit(int position) {
         //TODO when click the edit button on mLvContacts
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.rlContactFragment, new ContactFragment());
+        fragmentTransaction.add(R.id.rlContactFragment, new ContactFragment(mContacts.get(position)));
         fragmentTransaction.addToBackStack("ContactFragment");
         fragmentTransaction.commit();
+
+        hbListContacts.setTitle("Contact");
     }
 
     @Override
     public void onClickBtnDelete(int position) {
         //TODO when click the delete button on mLvContacts
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        // reset headerbar title
+        hbListContacts.setTitle("Contacts");
     }
 }
