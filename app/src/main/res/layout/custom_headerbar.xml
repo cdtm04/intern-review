@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/headerbar.background.height"
+    android:layout_height="@dimen/headerbar.layout_height"
     android:background="@color/theme"
     android:orientation="vertical">
 
-
     <ImageButton
         android:id="@+id/btnBack"
-        android:layout_width="@dimen/headerbar.background.height"
+        android:layout_width="@dimen/headerbar.layout_height"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_pressed_theme_color"
+        android:background="@drawable/bg_clickable_themecolor"
         android:scaleType="center"
         android:src="@drawable/ic_back" />
 
     <TextView
-        android:id="@+id/txtTitle"
+        android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"

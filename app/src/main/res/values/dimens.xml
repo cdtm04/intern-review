@@ -3,7 +3,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="headerbar.background.height">52dp</dimen>
-    <dimen name="headerbar.imageview.back_icon_size">18dp</dimen>
+    <dimen name="headerbar.layout_height">52dp</dimen>
     <dimen name="headerbar.textview.title_size">24sp</dimen>
 </resources>
