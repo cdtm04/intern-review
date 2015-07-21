@@ -5,4 +5,9 @@
 
     <dimen name="headerbar.layout_height">52dp</dimen>
     <dimen name="headerbar.textview.title_size">24sp</dimen>
+    <dimen name="listcontacts.item.layout_height">73dp</dimen>
+    <dimen name="listcontacts.item.circleimageview.avatar_size">47dp</dimen>
+    <dimen name="listcontacts.item.textview.text_size">15sp</dimen>
+    <dimen name="listcontacts.item.button_size">32dp</dimen>
+
 </resources>

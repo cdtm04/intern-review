@@ -7,10 +7,10 @@
     android:background="@color/white"
     tools:context=".MainActivity">
 
-    <intership.dev.contact.HeaderBarCustom
+    <intership.dev.contact.HeaderBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         custom:back_icon="@drawable/ic_back"
-        custom:header_title="@string/contacts.headerbar.title"></intership.dev.contact.HeaderBarCustom>
+        custom:header_title="@string/contacts.headerbar.title"></intership.dev.contact.HeaderBar>
 
 </RelativeLayout>

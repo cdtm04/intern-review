@@ -3,4 +3,5 @@
     <color name="theme">#00bbd2</color>
     <color name="theme.pressed">#00c6d2</color>
     <color name="white">#ffffff</color>
+    <color name="transparent">#0000</color>
 </resources>

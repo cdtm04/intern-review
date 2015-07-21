@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/listcontacts.item.layout_height">
+
+    <intership.dev.contact.CircleImageView
+        android:id="@+id/imgAvatar"
+        android:layout_width="@dimen/listcontacts.item.circleimageview.avatar_size"
+        android:layout_height="@dimen/listcontacts.item.circleimageview.avatar_size"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="20dp"
+        android:src="@drawable/img_avatar" />
+
+    <TextView
+        android:id="@+id/tvUserNameOfContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/btnEditContact"
+        android:layout_toRightOf="@+id/imgAvatar"
+        android:padding="16dp"
+        android:text="Luke"
+        android:textSize="@dimen/listcontacts.item.textview.text_size" />
+
+    <ImageButton
+        android:id="@+id/btnEditContact"
+        android:layout_width="@dimen/listcontacts.item.button_size"
+        android:layout_height="@dimen/listcontacts.item.button_size"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/btnDeleteContact"
+        android:background="@color/transparent"
+        android:scaleType="center"
+        android:src="@drawable/bg_listcontacts_item_editbutton" />
+
+    <ImageButton
+        android:id="@+id/btnDeleteContact"
+        android:layout_width="@dimen/listcontacts.item.button_size"
+        android:layout_height="@dimen/listcontacts.item.button_size"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="7dp"
+        android:background="@color/transparent"
+        android:scaleType="center"
+        android:src="@drawable/bg_listcontacts_item_delbutton" />
+
+</RelativeLayout>

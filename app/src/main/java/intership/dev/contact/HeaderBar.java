@@ -11,9 +11,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
- * Class custom header bar for application
+ * Class custom header bar for this application
  */
-public class HeaderBarCustom extends RelativeLayout implements View.OnClickListener {
+public class HeaderBar extends RelativeLayout implements View.OnClickListener {
 
     /**
      * Interface definition for a callback to be invoked when a view of Actionbar is clicked.
@@ -35,18 +35,18 @@ public class HeaderBarCustom extends RelativeLayout implements View.OnClickListe
     private ImageButton mBtnBack;
     private TextView mTvTitle;
 
-    public HeaderBarCustom(Context context) {
+    public HeaderBar(Context context) {
         super(context);
         initialize(context);
     }
 
-    public HeaderBarCustom(Context context, AttributeSet attrs) {
+    public HeaderBar(Context context, AttributeSet attrs) {
         super(context, attrs);
         initialize(context);
         setAttributeSet(context, attrs);
     }
 
-    public HeaderBarCustom(Context context, AttributeSet attrs, int defStyleAttr) {
+    public HeaderBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initialize(context);
         setAttributeSet(context, attrs);
@@ -135,4 +135,5 @@ public class HeaderBarCustom extends RelativeLayout implements View.OnClickListe
             }
         }
     }
+
 }
