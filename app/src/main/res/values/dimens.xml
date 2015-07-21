@@ -10,4 +10,8 @@
     <dimen name="listcontacts.item.textview.text_size">15sp</dimen>
     <dimen name="listcontacts.item.button_size">32dp</dimen>
 
+    <dimen name="fragmentcontact.header.imageview.avatar_size">93dp</dimen>
+    <dimen name="fragmentcontact.textview.text_size">20sp</dimen>
+
 </resources>
+

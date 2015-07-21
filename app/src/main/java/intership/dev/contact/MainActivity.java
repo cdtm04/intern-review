@@ -1,13 +1,16 @@
 package intership.dev.contact;
 
+import android.support.v4.app.FragmentManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 
@@ -17,7 +20,6 @@ import java.util.ArrayList;
 public class MainActivity extends FragmentActivity implements ListViewContactsAdapter.OnClickListViewContacts {
 
     private ListView mLvContacts;
-
     private ListViewContactsAdapter mListViewContactsAdapter;
     private ArrayList<Contact> mContacts;
 
@@ -51,6 +53,10 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
     @Override
     public void onClickBtnEdit(int position) {
         //TODO when click the edit button on mLvContacts
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.add(R.id.rlContactFragment, new ContactFragment());
+        fragmentTransaction.addToBackStack("ContactFragment");
+        fragmentTransaction.commit();
     }
 
     @Override

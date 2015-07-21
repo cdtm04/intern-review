@@ -13,10 +13,15 @@
         custom:back_icon="@drawable/ic_back"
         custom:header_title="@string/contacts.headerbar.title"></intership.dev.contact.HeaderBar>
 
-    <ListView
-        android:id="@+id/lvContacts"
+    <RelativeLayout
+        android:id="@+id/rlContactFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/hbListContacts"></ListView>
+        android:layout_below="@+id/hbListContacts">
 
+        <ListView
+            android:id="@+id/lvContacts"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></ListView>
+    </RelativeLayout>
 </RelativeLayout>
