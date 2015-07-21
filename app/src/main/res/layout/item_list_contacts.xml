@@ -9,7 +9,7 @@
         android:layout_height="@dimen/listcontacts.item.circleimageview.avatar_size"
         android:layout_centerVertical="true"
         android:layout_marginLeft="20dp"
-        android:src="@drawable/img_avatar" />
+        android:src="@drawable/img_avatar1" />
 
     <TextView
         android:id="@+id/tvUserNameOfContact"
@@ -20,6 +20,7 @@
         android:layout_toRightOf="@+id/imgAvatar"
         android:padding="16dp"
         android:text="Luke"
+        android:textColor="@color/theme.textview.text"
         android:textSize="@dimen/listcontacts.item.textview.text_size" />
 
     <ImageButton

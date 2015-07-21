@@ -1,4 +1,3 @@
-<!--suppress AndroidDomInspection -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,9 +7,16 @@
     tools:context=".MainActivity">
 
     <intership.dev.contact.HeaderBar
+        android:id="@+id/hbListContacts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         custom:back_icon="@drawable/ic_back"
         custom:header_title="@string/contacts.headerbar.title"></intership.dev.contact.HeaderBar>
+
+    <ListView
+        android:id="@+id/lvContacts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/hbListContacts"></ListView>
 
 </RelativeLayout>

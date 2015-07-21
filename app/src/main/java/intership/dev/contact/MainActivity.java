@@ -1,38 +1,60 @@
 package intership.dev.contact;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 
+import java.util.ArrayList;
 
-public class MainActivity extends ActionBarActivity {
+/**
+ * MainActivity
+ */
+public class MainActivity extends FragmentActivity implements ListViewContactsAdapter.OnClickListViewContacts {
+
+    private ListView mLvContacts;
+
+    private ListViewContactsAdapter mListViewContactsAdapter;
+    private ArrayList<Contact> mContacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initialize();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+    /**
+     * initialize views from layout
+     */
+    private void initialize() {
+        mLvContacts = (ListView) findViewById(R.id.lvContacts);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        mContacts = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            mContacts.add(new Contact("Thomas Anders", "Thomas Anders", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar1)));
+            mContacts.add(new Contact("Valery Meladze", "Valery Meladze", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar2)));
+            mContacts.add(new Contact("Jack Black", "Jack Black", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar3)));
+            mContacts.add(new Contact("Kevin James", "Kevin James", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar4)));
         }
 
-        return super.onOptionsItemSelected(item);
+        mListViewContactsAdapter = new ListViewContactsAdapter(this, mContacts);
+        mListViewContactsAdapter.setOnClickListViewContacts(this);
+
+        mLvContacts.setAdapter(mListViewContactsAdapter);
+    }
+
+    @Override
+    public void onClickBtnEdit(int position) {
+        //TODO when click the edit button on mLvContacts
+    }
+
+    @Override
+    public void onClickBtnDelete(int position) {
+        //TODO when click the delete button on mLvContacts
     }
 }

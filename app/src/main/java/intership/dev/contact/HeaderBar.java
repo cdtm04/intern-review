@@ -135,5 +135,4 @@ public class HeaderBar extends RelativeLayout implements View.OnClickListener {
             }
         }
     }
-
 }
