@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         custom:back_icon="@drawable/ic_back"
-        custom:header_title="@string/contacts.headerbar.title"></intership.dev.contact.HeaderBar>
+        custom:header_title="@string/headerbar.title.contacts"></intership.dev.contact.HeaderBar>
 
     <RelativeLayout
         android:id="@+id/rlContactFragment"

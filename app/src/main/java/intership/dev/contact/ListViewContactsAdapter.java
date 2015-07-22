@@ -15,6 +15,9 @@ import java.util.ArrayList;
  */
 public class ListViewContactsAdapter extends BaseAdapter {
 
+    /**
+     * Interface definition for a callback to be invoked when a view of ListView is clicked.
+     */
     public interface OnClickListViewContacts {
 
         void onClickBtnEdit(int position);
@@ -83,6 +86,8 @@ public class ListViewContactsAdapter extends BaseAdapter {
     private void setValueOnView(ViewHolder viewHolder, Contact contact, final int position) {
         viewHolder.mImgAvatar.setImageBitmap(contact.getAvatar());
         viewHolder.mTvUserNameOfContact.setText(contact.getName());
+
+        // registering listener
         viewHolder.mBtnDeleteContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

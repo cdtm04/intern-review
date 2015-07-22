@@ -49,12 +49,13 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
 
     @Override
     public void onClickBtnEdit(int position) {
-        //TODO when click the edit button on mLvContacts
+        // adding contact fragment
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.rlContactFragment, new ContactFragment(mContacts.get(position)));
         fragmentTransaction.addToBackStack("ContactFragment");
         fragmentTransaction.commit();
 
+        // change title of HeaderBar
         hbListContacts.setTitle("Contact");
     }
 

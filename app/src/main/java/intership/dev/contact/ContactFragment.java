@@ -3,6 +3,7 @@ package intership.dev.contact;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -12,7 +13,7 @@ import android.widget.TextView;
 /**
  * ContactFragment to show information of a contact
  */
-public class ContactFragment extends Fragment {
+public class ContactFragment extends Fragment implements View.OnTouchListener {
 
     private CircleImageView mIvAvatar;
     private TextView mTvUserNameOfContact;
@@ -38,6 +39,7 @@ public class ContactFragment extends Fragment {
      * @param rootView RootView inflater from layout
      */
     private void initialize(View rootView) {
+        // get
         mIvAvatar = (CircleImageView) rootView.findViewById(R.id.ivAvatar);
         mTvUserNameOfContact = (TextView) rootView.findViewById(R.id.tvUserNameOfContact);
         mEtName = (EditText) rootView.findViewById(R.id.etName);
@@ -45,9 +47,33 @@ public class ContactFragment extends Fragment {
         mBtnSave = (Button) rootView.findViewById(R.id.btnSave);
         mBtnCancel = (Button) rootView.findViewById(R.id.btnCancel);
 
+        // set
         mIvAvatar.setImageBitmap(mContact.getAvatar());
         mTvUserNameOfContact.setText(mContact.getName());
         mEtName.setText(mContact.getName());
         mEtDescription.setText(mContact.getDecription());
+        mBtnSave.setOnTouchListener(this);
+        mBtnCancel.setOnTouchListener(this);
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        if (view == mBtnCancel) {
+            if (motionEvent.getAction() == MotionEvent.AXIS_PRESSURE) {
+                // if press cancel button, its textcolor will be changed
+                mBtnCancel.setTextColor(getResources().getColor(R.color.theme_header));
+            } else if ((motionEvent.getAction() == MotionEvent.ACTION_UP)) {
+                // call the onBackPressed() of FragmentActivity
+                getActivity().onBackPressed();
+            }
+        } else if (view == mBtnSave) {
+            if (motionEvent.getAction() == MotionEvent.AXIS_PRESSURE) {
+                // if press cancel button, its textcolor will be changed
+                mBtnSave.setTextColor(getResources().getColor(R.color.theme_header));
+            } else if ((motionEvent.getAction() == MotionEvent.ACTION_UP)) {
+                //TODO when click btnSave
+            }
+        }
+        return false;
     }
 }
