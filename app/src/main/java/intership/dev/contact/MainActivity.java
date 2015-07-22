@@ -62,6 +62,7 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
     @Override
     public void onClickBtnDelete(int position) {
         //TODO when click the delete button on mLvContacts
+        new DeleteDialog(this).show();
     }
 
     @Override
