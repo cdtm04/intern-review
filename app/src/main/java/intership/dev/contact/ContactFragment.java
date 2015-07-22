@@ -61,16 +61,18 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
         if (view == mBtnCancel) {
             if (motionEvent.getAction() == MotionEvent.AXIS_PRESSURE) {
                 // if press cancel button, its textcolor will be changed
-                mBtnCancel.setTextColor(getResources().getColor(R.color.theme_header));
+                mBtnCancel.setTextColor(getResources().getColor(R.color.theme_button_pressed_text));
             } else if ((motionEvent.getAction() == MotionEvent.ACTION_UP)) {
+                mBtnCancel.setTextColor(getResources().getColor(R.color.theme_button_text));
                 // call the onBackPressed() of FragmentActivity
                 getActivity().onBackPressed();
             }
         } else if (view == mBtnSave) {
             if (motionEvent.getAction() == MotionEvent.AXIS_PRESSURE) {
                 // if press cancel button, its textcolor will be changed
-                mBtnSave.setTextColor(getResources().getColor(R.color.theme_header));
+                mBtnSave.setTextColor(getResources().getColor(R.color.theme_button_pressed_text));
             } else if ((motionEvent.getAction() == MotionEvent.ACTION_UP)) {
+                mBtnSave.setTextColor(getResources().getColor(R.color.theme_button_text));
                 //TODO when click btnSave
             }
         }

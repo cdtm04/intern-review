@@ -6,6 +6,7 @@
     <color name="transparent">#0000</color>
     <color name="theme.textview.text">#626262</color>
     <color name="theme.button.text">#b0b0b0</color>
+    <color name="theme.button.pressed_text">#9bc8ff</color>
     <color name="fragmentcontact.textview.background">#f9f9f9</color>
 
 </resources>
