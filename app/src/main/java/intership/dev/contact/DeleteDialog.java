@@ -28,7 +28,7 @@ public class DeleteDialog extends Dialog {
     private OnClickButtonDeleteDialog mOnClickButtonDeleteDialog;
 
     private Context mContext;
-    private String mMessage = "";
+    private String mMessage = "Your Message Here.";
 
     private TextView mTvMessage;
     private Button mBtnOk, mBtnCancel;

@@ -21,6 +21,8 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
     private ListViewContactsAdapter mListViewContactsAdapter;
     private ArrayList<Contact> mContacts;
 
+    private DeleteDialog mDeleteDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +36,7 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
     private void initialize() {
         hbListContacts = (HeaderBar) findViewById(R.id.hbListContacts);
         mLvContacts = (ListView) findViewById(R.id.lvContacts);
+        mDeleteDialog = new DeleteDialog(this);
 
         mContacts = new ArrayList<>();
 
@@ -91,9 +94,15 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
 
     @Override
     public void onClickBtnEdit(int position) {
-        // adding contact fragment
+        // creating a contactFragment and sending it the contact to show
+        ContactFragment contactFragment = new ContactFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(ContactFragment.EXTRA_CONTACT, mContacts.get(position));
+        contactFragment.setArguments(bundle);
+
+        // adding fragment in the layout
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.rlContactFragment, new ContactFragment(mContacts.get(position)));
+        fragmentTransaction.add(R.id.rlContactFragment, contactFragment);
         fragmentTransaction.addToBackStack("ContactFragment");
         fragmentTransaction.commit();
 
@@ -104,7 +113,8 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
     @Override
     public void onClickBtnDelete(int position) {
         //TODO when click the delete button on mLvContacts
-        new DeleteDialog(this).show();
+        mDeleteDialog.setMessage("Do you want to <b>delete</b><br><b>" + mContacts.get(position).getName() + "</b>?");
+        mDeleteDialog.show();
     }
 
     @Override

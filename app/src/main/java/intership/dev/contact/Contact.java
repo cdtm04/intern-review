@@ -2,10 +2,12 @@ package intership.dev.contact;
 
 import android.graphics.Bitmap;
 
+import java.io.Serializable;
+
 /**
  * Class manage information of a user
  */
-public class Contact {
+public class Contact implements Serializable {
 
     private String mName, mDecription;
     private Bitmap mAvatar;

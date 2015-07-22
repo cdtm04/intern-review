@@ -14,6 +14,7 @@ import android.widget.TextView;
  * ContactFragment to show information of a contact
  */
 public class ContactFragment extends Fragment implements View.OnTouchListener {
+    public final static String EXTRA_CONTACT = "mContact";
 
     private CircleImageView mIvAvatar;
     private TextView mTvUserNameOfContact;
@@ -23,13 +24,11 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
     private Contact mContact;
     private DeleteDialog mDeleteDialog;
 
-    public ContactFragment(Contact mContact) {
-        this.mContact = mContact;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_contact, container, false);
+        // get contact from activity
+        mContact = (Contact) getArguments().getSerializable(ContactFragment.EXTRA_CONTACT);
         initialize(rootView);
         return rootView;
     }
@@ -58,6 +57,12 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
         mBtnCancel.setOnTouchListener(this);
     }
 
+
+    private void clickOkButton() {
+        //TODO when click OK button
+    }
+
+    // just do some UI
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         if (view == mBtnCancel) {
@@ -74,8 +79,22 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
                 // if press cancel button, its textcolor will be changed
                 mBtnSave.setTextColor(getResources().getColor(R.color.theme_button_pressed_text));
             } else if ((motionEvent.getAction() == MotionEvent.ACTION_UP)) {
+                // change color
                 mBtnSave.setTextColor(getResources().getColor(R.color.theme_button_text));
-                mDeleteDialog.setMessage("Do you want to <b>save</b>?");
+
+                // create dialog and show it
+                mDeleteDialog.setMessage("Do you want to <b>save</b><br><b>" + mContact.getName() + "</b>?");
+                mDeleteDialog.setmOnClickButtonDeleteDialog(new DeleteDialog.OnClickButtonDeleteDialog() {
+                    @Override
+                    public void onOkClick() {
+                        clickOkButton();
+                    }
+
+                    @Override
+                    public void onCancelClick() {
+                        mDeleteDialog.cancel();
+                    }
+                });
                 mDeleteDialog.show();
             }
         }
