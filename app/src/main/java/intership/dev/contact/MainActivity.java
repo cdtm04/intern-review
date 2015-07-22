@@ -1,6 +1,8 @@
 package intership.dev.contact;
 
+import android.app.ProgressDialog;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
@@ -19,14 +21,17 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
     private HeaderBar hbListContacts;
     private ListView mLvContacts;
     private ListViewContactsAdapter mListViewContactsAdapter;
-    private ArrayList<Contact> mContacts;
+    private ArrayList<Contact> mContacts = new ArrayList<>();
 
     private DeleteDialog mDeleteDialog;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //loadData();
+        new LoadDataTask().execute();
         initialize();
     }
 
@@ -37,10 +42,6 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
         hbListContacts = (HeaderBar) findViewById(R.id.hbListContacts);
         mLvContacts = (ListView) findViewById(R.id.lvContacts);
         mDeleteDialog = new DeleteDialog(this);
-
-        mContacts = new ArrayList<>();
-
-        loadData();
 
         mListViewContactsAdapter = new ListViewContactsAdapter(this, mContacts);
         mListViewContactsAdapter.setOnClickListViewContacts(this);
@@ -64,19 +65,6 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
 
             }
         });
-    }
-
-    /**
-     * Loading first data
-     */
-    private void loadData() {
-        // example data
-        for (int i = 0; i < 10; i++) {
-            mContacts.add(new Contact("Thomas Anders", "Thomas Anders", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar1)));
-            mContacts.add(new Contact("Valery Meladze", "Valery Meladze", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar2)));
-            mContacts.add(new Contact("Jack Black", "Jack Black", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar3)));
-            mContacts.add(new Contact("Kevin James", "Kevin James", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar4)));
-        }
     }
 
     /**
@@ -122,6 +110,40 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
         super.onBackPressed();
         // reset headerbar title
         hbListContacts.setTitle("Contacts");
+    }
+
+    private class LoadDataTask extends AsyncTask<Void, Void, ArrayList<Contact>> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDialog = new ProgressDialog(MainActivity.this);
+            mProgressDialog.setMessage("Loading data...");
+            mProgressDialog.show();
+        }
+
+        @Override
+        protected ArrayList<Contact> doInBackground(Void... voids) {
+            // example data
+            for (int j = 0; j < 10; j++) {
+                mContacts.add(new Contact("Thomas Anders", "Thomas Anders", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar1)));
+                mContacts.add(new Contact("Valery Meladze", "Valery Meladze", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar2)));
+                mContacts.add(new Contact("Jack Black", "Jack Black", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar3)));
+                mContacts.add(new Contact("Kevin James", "Kevin James", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar4)));
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+            mListViewContactsAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Contact> contacts) {
+            super.onPostExecute(contacts);
+            mProgressDialog.dismiss();
+        }
     }
 }
 
