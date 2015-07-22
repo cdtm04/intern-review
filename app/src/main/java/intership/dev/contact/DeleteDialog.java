@@ -4,6 +4,7 @@ package intership.dev.contact;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -19,7 +20,7 @@ public class DeleteDialog extends Dialog {
      */
     public interface OnClickButtonDeleteDialog {
 
-        void onSaveClick();
+        void onOkClick();
 
         void onCancelClick();
     }
@@ -27,9 +28,10 @@ public class DeleteDialog extends Dialog {
     private OnClickButtonDeleteDialog mOnClickButtonDeleteDialog;
 
     private Context mContext;
+    private String mMessage = "";
 
     private TextView mTvMessage;
-    private Button mBtnSave, mBtnCancel;
+    private Button mBtnOk, mBtnCancel;
 
     public DeleteDialog(Context context) {
         super(context);
@@ -51,18 +53,19 @@ public class DeleteDialog extends Dialog {
 
     private void initialize() {
         mTvMessage = (TextView) findViewById(R.id.tvMessage);
-        mBtnSave = (Button) findViewById(R.id.btnSave);
+        mTvMessage.setText(Html.fromHtml(mMessage));
+        mBtnOk = (Button) findViewById(R.id.btnOk);
         mBtnCancel = (Button) findViewById(R.id.btnCancel);
 
-        mBtnSave.setOnTouchListener(new View.OnTouchListener() {
+        mBtnOk.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.AXIS_PRESSURE) {
-                    mBtnSave.setTextColor(mContext.getResources().getColor(R.color.theme_button_text));
+                    mBtnOk.setTextColor(mContext.getResources().getColor(R.color.theme_button_text));
                 } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    mBtnSave.setTextColor(mContext.getResources().getColor(R.color.dialog_button_text));
+                    mBtnOk.setTextColor(mContext.getResources().getColor(R.color.dialog_button_text));
                     if (mOnClickButtonDeleteDialog != null) {
-                        mOnClickButtonDeleteDialog.onSaveClick();
+                        mOnClickButtonDeleteDialog.onOkClick();
                     }
                 }
                 return false;
@@ -93,7 +96,7 @@ public class DeleteDialog extends Dialog {
      * @param message The message
      */
     public void setMessage(String message) {
-        mTvMessage.setText(message);
+        mMessage = message;
     }
 
     /**

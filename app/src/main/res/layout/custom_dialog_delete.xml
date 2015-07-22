@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="20dp"
+        android:layout_margin="30dp"
         android:gravity="center"
         android:maxWidth="250dip"
         android:text="abc abc bac dfbdb sfbvsrfb sdfbsdbf sdfbsddb sfbsrfb"
@@ -24,12 +24,12 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btnSave"
+            android:id="@+id/btnOk"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/transparent"
-            android:text="Save"
+            android:text="OK"
             android:textColor="@color/dialog.button.text" />
 
         <Button

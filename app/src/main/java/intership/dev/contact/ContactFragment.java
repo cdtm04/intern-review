@@ -21,6 +21,7 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
     private Button mBtnSave, mBtnCancel;
 
     private Contact mContact;
+    private DeleteDialog mDeleteDialog;
 
     public ContactFragment(Contact mContact) {
         this.mContact = mContact;
@@ -46,6 +47,7 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
         mEtDescription = (EditText) rootView.findViewById(R.id.etDescription);
         mBtnSave = (Button) rootView.findViewById(R.id.btnSave);
         mBtnCancel = (Button) rootView.findViewById(R.id.btnCancel);
+        mDeleteDialog = new DeleteDialog(getActivity());
 
         // set
         mIvAvatar.setImageBitmap(mContact.getAvatar());
@@ -73,7 +75,8 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
                 mBtnSave.setTextColor(getResources().getColor(R.color.theme_button_pressed_text));
             } else if ((motionEvent.getAction() == MotionEvent.ACTION_UP)) {
                 mBtnSave.setTextColor(getResources().getColor(R.color.theme_button_text));
-                //TODO when click btnSave
+                mDeleteDialog.setMessage("Do you want to <b>save</b>?");
+                mDeleteDialog.show();
             }
         }
         return false;

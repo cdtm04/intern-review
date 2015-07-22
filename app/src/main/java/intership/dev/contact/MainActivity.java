@@ -4,6 +4,9 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -33,6 +36,37 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
         mLvContacts = (ListView) findViewById(R.id.lvContacts);
 
         mContacts = new ArrayList<>();
+
+        loadData();
+
+        mListViewContactsAdapter = new ListViewContactsAdapter(this, mContacts);
+        mListViewContactsAdapter.setOnClickListViewContacts(this);
+
+        mLvContacts.setAdapter(mListViewContactsAdapter);
+        // hanlde event scroll to the last item of listview
+        mLvContacts.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+                if (i == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
+                        && (mLvContacts.getLastVisiblePosition() - mLvContacts.getHeaderViewsCount() -
+                        mLvContacts.getFooterViewsCount()) >= (mListViewContactsAdapter.getCount() - 1)) {
+                    //TODO load more listview
+                    loadMoreData();
+                    mListViewContactsAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+
+            }
+        });
+    }
+
+    /**
+     * Loading first data
+     */
+    private void loadData() {
         // example data
         for (int i = 0; i < 10; i++) {
             mContacts.add(new Contact("Thomas Anders", "Thomas Anders", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar1)));
@@ -40,11 +74,19 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
             mContacts.add(new Contact("Jack Black", "Jack Black", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar3)));
             mContacts.add(new Contact("Kevin James", "Kevin James", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar4)));
         }
+    }
 
-        mListViewContactsAdapter = new ListViewContactsAdapter(this, mContacts);
-        mListViewContactsAdapter.setOnClickListViewContacts(this);
-
-        mLvContacts.setAdapter(mListViewContactsAdapter);
+    /**
+     * Loading more data here
+     */
+    private void loadMoreData() {
+        // example data
+        for (int j = 0; j < 10; j++) {
+            mContacts.add(new Contact("Thomas Anders", "Thomas Anders", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar1)));
+            mContacts.add(new Contact("Valery Meladze", "Valery Meladze", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar2)));
+            mContacts.add(new Contact("Jack Black", "Jack Black", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar3)));
+            mContacts.add(new Contact("Kevin James", "Kevin James", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar4)));
+        }
     }
 
     @Override
@@ -72,3 +114,4 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
         hbListContacts.setTitle("Contacts");
     }
 }
+
