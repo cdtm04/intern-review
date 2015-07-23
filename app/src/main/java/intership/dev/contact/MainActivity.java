@@ -26,6 +26,10 @@ import java.util.Locale;
  * MainActivity
  */
 public class MainActivity extends FragmentActivity {
+    public final String TABLE_CONTACT = "tblContact";
+    public final String COL_ID = "id";
+    public final String COL_NAME = "name";
+    public final String COL_DESCRIPTION = "description";
 
     private SwipeRefreshLayout mSrlRefreshContacts;
     private HeaderBar hbListContacts;
@@ -81,26 +85,26 @@ public class MainActivity extends FragmentActivity {
             mDatabase = openOrCreateDatabase(Environment.getExternalStorageDirectory().getAbsolutePath() + "/ContactApp/contact.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
             if (mDatabase != null) {
                 // if tblContact is existing, return itself
-                if (isTableExists(mDatabase, "tblContact"))
+                if (isTableExists(mDatabase, TABLE_CONTACT))
                     return mDatabase;
 
                 // if tblContact is not existing, create it
                 mDatabase.setLocale(Locale.getDefault());
                 mDatabase.setVersion(1);
-                String sqlContact = "create table tblContact ("
-                        + "id integer,"
-                        + "name text, "
-                        + "description text)";
+                String sqlContact = "create table " + TABLE_CONTACT + " ("
+                        + COL_ID + " integer,"
+                        + COL_NAME + " text, "
+                        + COL_DESCRIPTION + " text)";
                 mDatabase.execSQL(sqlContact);
                 Toast.makeText(MainActivity.this, "OK OK", Toast.LENGTH_LONG).show();
 
                 // create some example data
                 for (int i = 0; i < 100; i++) {
                     ContentValues values = new ContentValues();
-                    values.put("id", i);
-                    values.put("name", "Contact " + i);
-                    values.put("description", "Contact " + i + "'s Desciption");
-                    if (mDatabase.insert("tblContact", null, values) == -1) {
+                    values.put(COL_ID, i);
+                    values.put(COL_NAME, "Contact " + i);
+                    values.put(COL_DESCRIPTION, "Contact " + i + "'s Desciption");
+                    if (mDatabase.insert(TABLE_CONTACT, null, values) == -1) {
                         Toast.makeText(this, "Faild to add record", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -149,7 +153,7 @@ public class MainActivity extends FragmentActivity {
                         && (mLvContacts.getLastVisiblePosition() - mLvContacts.getHeaderViewsCount() -
                         mLvContacts.getFooterViewsCount()) >= (mListViewContactsAdapter.getCount() - 1)) {
                     // call LoadingNextDataTask to load, if loading the last data show Toast
-                    int numOfTblContactRows = (int) DatabaseUtils.queryNumEntries(mDatabase, "tblContact");
+                    int numOfTblContactRows = (int) DatabaseUtils.queryNumEntries(mDatabase, TABLE_CONTACT);
                     if (numOfTblContactRows == mContacts.size()) {
                         Toast.makeText(MainActivity.this, "No more contact.", Toast.LENGTH_SHORT).show();
                     } else {
@@ -210,7 +214,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onOkClick() {
                 // delete row from database and update UI
-                int delete = mDatabase.delete("tblContact", "id=?", new String[]{mContacts.get(position).getId() + ""});
+                int delete = mDatabase.delete(TABLE_CONTACT, COL_ID + "=?", new String[]{mContacts.get(position).getId() + ""});
                 if (delete == -1) {
                     Toast.makeText(MainActivity.this, "Can't delete " + mContacts.get(position).getName() + ".", Toast.LENGTH_SHORT).show();
                 } else {
@@ -256,10 +260,10 @@ public class MainActivity extends FragmentActivity {
             String query = "";
             if (!booleans[0]) {
                 // load next rows
-                query = "select * from tblContact where id >= " + mContacts.size() + " and id <= " + (mContacts.size() + 30);
+                query = "select * from " + TABLE_CONTACT + " where " + COL_ID + " >= " + mContacts.size() + " and " + COL_ID + " <= " + (mContacts.size() + 30);
             } else {
                 // load first rows
-                query = "select * from tblContact where id < 30";
+                query = "select * from " + TABLE_CONTACT + " where " + COL_ID + " < 30";
                 // clear old rows
                 mContacts.clear();
             }
@@ -304,11 +308,11 @@ public class MainActivity extends FragmentActivity {
      */
     public void updateRow(int position, Contact contact) {
         ContentValues values = new ContentValues();
-        values.put("name", contact.getName());
-        values.put("description", contact.getDecription());
+        values.put(COL_NAME, contact.getName());
+        values.put(COL_DESCRIPTION, contact.getDecription());
 
         // update data in database
-        int update = mDatabase.update("tblContact", values, "id=?", new String[]{contact.getId() + ""});
+        int update = mDatabase.update(TABLE_CONTACT, values, COL_ID + "=?", new String[]{contact.getId() + ""});
         if (update == -1) {
             Toast.makeText(this, "Can't update " + contact.getName() + ".", Toast.LENGTH_SHORT).show();
         } else {
