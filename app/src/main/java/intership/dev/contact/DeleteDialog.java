@@ -104,7 +104,7 @@ public class DeleteDialog extends Dialog {
      *
      * @param mOnClickButtonDeleteDialog The listener
      */
-    public void setmOnClickButtonDeleteDialog(OnClickButtonDeleteDialog mOnClickButtonDeleteDialog) {
+    public void setOnClickButtonDeleteDialog(OnClickButtonDeleteDialog mOnClickButtonDeleteDialog) {
         this.mOnClickButtonDeleteDialog = mOnClickButtonDeleteDialog;
     }
 }

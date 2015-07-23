@@ -44,7 +44,7 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         // Creating database and table tblContact and return new database, if it's existing return it
-        getDatabase();
+        createDatabase();
 
         initialize();
 
@@ -76,7 +76,7 @@ public class MainActivity extends FragmentActivity {
      *
      * @return The database
      */
-    private SQLiteDatabase getDatabase() {
+    private SQLiteDatabase createDatabase() {
         try {
             mDatabase = openOrCreateDatabase(Environment.getExternalStorageDirectory().getAbsolutePath() + "/ContactApp/contact.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
             if (mDatabase != null) {
@@ -208,11 +208,13 @@ public class MainActivity extends FragmentActivity {
         mDeleteDialog.setOnClickButtonDeleteDialog(new DeleteDialog.OnClickButtonDeleteDialog() {
             @Override
             public void onOkClick() {
+                // delete row from database and update UI
                 if (mDatabase.delete("tblContact", "id=?", new String[]{position + ""}) == -1) {
+                    Toast.makeText(MainActivity.this, "Can't delete " + mContacts.get(position).getName() + ".", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, mContacts.get(position).getName() + " is deleted.", Toast.LENGTH_SHORT).show();
                     mContacts.remove(position);
                     mListViewContactsAdapter.notifyDataSetChanged();
-                } else {
-                    Toast.makeText(MainActivity.this, "Can't delete " + mContacts.get(position).getName() + ".", Toast.LENGTH_SHORT).show();
                 }
                 mDeleteDialog.dismiss();
             }
@@ -289,6 +291,30 @@ public class MainActivity extends FragmentActivity {
             if (mSrlRefreshContacts.isRefreshing()) {
                 mSrlRefreshContacts.setRefreshing(false);
             }
+        }
+    }
+
+    /**
+     * Updating a row in database
+     *
+     * @param position The position or id in Database
+     * @param contact  The contact contains information which want to update
+     */
+    public void updateRow(int position, Contact contact) {
+        ContentValues values = new ContentValues();
+        values.put("id", contact.getId());
+        values.put("name", contact.getName());
+        values.put("description", contact.getDecription());
+
+        // update data in database
+        int update = mDatabase.update("tblContact", values, "id=?", new String[]{position + ""});
+        if (update == -1) {
+            Toast.makeText(this, "Can't update " + contact.getName() + ".", Toast.LENGTH_SHORT).show();
+        } else {
+            mContacts.remove(position);
+            mContacts.add(position, contact);
+            mListViewContactsAdapter.notifyDataSetChanged();
+            Toast.makeText(this, contact.getName() + " is updated.", Toast.LENGTH_SHORT).show();
         }
     }
 }

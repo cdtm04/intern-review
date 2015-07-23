@@ -1,5 +1,6 @@
 package intership.dev.contact;
 
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * ContactFragment to show information of a contact
@@ -30,7 +32,6 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
 
         // get contact from activity
         mContact = (Contact) getArguments().getSerializable(ContactFragment.EXTRA_CONTACT);
-
         initialize(rootView);
 
         return rootView;
@@ -64,7 +65,20 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
      * Involked when click OK button
      */
     private void clickOkButton() {
-        //TODO when click OK button
+        String newName = mEtName.getText() + "";
+        String newDesc = mEtDescription.getText() + "";
+        if (!newName.equals("") && !newDesc.equals("")) {
+            // create new Contact object
+            Contact contact = new Contact(mContact.getId(), newName, newDesc, BitmapFactory.decodeResource(getActivity().getResources(),
+                    R.drawable.img_avatar1));
+            // call method updateRow from parent activity
+            ((MainActivity) getActivity()).updateRow(mContact.getId(), contact);
+
+            // return main UI
+            getActivity().onBackPressed();
+        } else {
+            Toast.makeText(getActivity(), "Please enter text.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // just do some UI
@@ -89,10 +103,11 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
 
                 // create dialog and show it
                 mDeleteDialog.setMessage("Do you want to <b>save</b><br><b>" + mContact.getName() + "</b>?");
-                mDeleteDialog.setmOnClickButtonDeleteDialog(new DeleteDialog.OnClickButtonDeleteDialog() {
+                mDeleteDialog.setOnClickButtonDeleteDialog(new DeleteDialog.OnClickButtonDeleteDialog() {
                     @Override
                     public void onOkClick() {
                         clickOkButton();
+                        mDeleteDialog.cancel();
                     }
 
                     @Override

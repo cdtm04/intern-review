@@ -9,13 +9,23 @@ import java.io.Serializable;
  */
 public class Contact implements Serializable {
 
+    private int mId;
     private String mName, mDecription;
     private Bitmap mAvatar;
 
-    public Contact(String mName, String mDecription, Bitmap mAvatar) {
+    public Contact(int id, String mName, String mDecription, Bitmap mAvatar) {
+        this.mId = id;
         this.mName = mName;
         this.mDecription = mDecription;
         this.mAvatar = mAvatar;
+    }
+
+    public int getId() {
+        return mId;
+    }
+
+    public void setId(int mId) {
+        this.mId = mId;
     }
 
     public String getName() {
