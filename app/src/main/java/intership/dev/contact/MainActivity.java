@@ -17,6 +17,7 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -81,7 +82,9 @@ public class MainActivity extends FragmentActivity {
      */
     private SQLiteDatabase createDatabase() {
         try {
-            mDatabase = openOrCreateDatabase(Environment.getExternalStorageDirectory().getAbsolutePath() + "/ContactApp/contact.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
+            File rootPath = getExternalFilesDir(null);
+            mDatabase = openOrCreateDatabase(rootPath.getAbsolutePath() + "/contact.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
+            String a = rootPath.getAbsolutePath() + "/contact.db";
             if (mDatabase != null) {
                 // if tblContact is existing, return itself
                 if (isTableExists(mDatabase, TABLE_CONTACT))
@@ -155,7 +158,9 @@ public class MainActivity extends FragmentActivity {
                         && (mLvContacts.getLastVisiblePosition() - mLvContacts.getHeaderViewsCount() -
                         mLvContacts.getFooterViewsCount()) >= (mListViewContactsAdapter.getCount() - 1)) {
                     // call LoadingNextDataTask to load, if loading the last data show Toast
-                    int numOfTblContactRows = (int) DatabaseUtils.queryNumEntries(mDatabase, TABLE_CONTACT);
+                    //int numOfTblContactRows = (int) DatabaseUtils.queryNumEntries(mDatabase, TABLE_CONTACT);
+                    Cursor cursor = mDatabase.query(TABLE_CONTACT, null, null, null, null, null, null);
+                    int numOfTblContactRows = cursor.getCount();
                     if (numOfTblContactRows == mContacts.size()) {
                         Toast.makeText(MainActivity.this, "No more contact.", Toast.LENGTH_SHORT).show();
                     } else {
@@ -224,12 +229,12 @@ public class MainActivity extends FragmentActivity {
                     mContacts.remove(position);
                     mListViewContactsAdapter.notifyDataSetChanged();
                 }
-                mDeleteDialog.dismiss();
+                mDeleteDialog.cancel();
             }
 
             @Override
             public void onCancelClick() {
-                mDeleteDialog.dismiss();
+                mDeleteDialog.cancel();
             }
         });
     }
@@ -262,23 +267,30 @@ public class MainActivity extends FragmentActivity {
             String query = "";
             if (!booleans[0]) {
                 // load next rows
-                query = "select * from " + TABLE_CONTACT + " where " + COL_ID + " >= " + mContacts.size() + " and " + COL_ID + " <= " + (mContacts.size() + 30);
+                int lastLoadedId = mContacts.get(mContacts.size() - 1).getId();
+                query = "select * from " + TABLE_CONTACT + " where " + COL_ID + " > " + lastLoadedId;
             } else {
                 // load first rows
-                query = "select * from " + TABLE_CONTACT + " where " + COL_ID + " < 30";
+                query = "select * from " + TABLE_CONTACT;
                 // clear old rows
                 mContacts.clear();
             }
             Cursor cursor = mDatabase.rawQuery(query, null);
             cursor.moveToFirst();
+            int count = 0;
             while (!cursor.isAfterLast()) {
-                int id = cursor.getInt(0);
-                String name = cursor.getString(1);
-                String description = cursor.getString(2);
-                Bitmap avatar = DbBitmapUtility.getImage(cursor.getBlob(3));
-                // add to arraylist
-                mContacts.add(new Contact(id, name, description, avatar));
-                cursor.moveToNext();
+                if (count != 30) {
+                    int id = cursor.getInt(0);
+                    String name = cursor.getString(1);
+                    String description = cursor.getString(2);
+                    Bitmap avatar = DbBitmapUtility.getImage(cursor.getBlob(3));
+                    // add to arraylist
+                    mContacts.add(new Contact(id, name, description, avatar));
+                    cursor.moveToNext();
+                    count++;
+                } else {
+                    break;
+                }
             }
             cursor.close();
             return null;

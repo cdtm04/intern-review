@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 /**
- * Created by merit on 21/07/2015.
+ * Custom dialog for application
  */
 public class DeleteDialog extends Dialog {
     /**
@@ -28,10 +28,10 @@ public class DeleteDialog extends Dialog {
     private OnClickButtonDeleteDialog mOnClickButtonDeleteDialog;
 
     private Context mContext;
-    private String mMessage = "Your Message Here.";
 
     private TextView mTvMessage;
     private Button mBtnOk, mBtnCancel;
+    private String mMessage = "Your message here.";
 
     public DeleteDialog(Context context) {
         super(context);
@@ -96,7 +96,11 @@ public class DeleteDialog extends Dialog {
      * @param message The message
      */
     public void setMessage(String message) {
-        mMessage = message;
+        if (mTvMessage != null) {
+            mTvMessage.setText(Html.fromHtml(message));
+        } else {
+            mMessage = message;
+        }
     }
 
     /**

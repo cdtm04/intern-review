@@ -11,7 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * Created by merit on 21/07/2015.
+ * Adapter manage the main listview
  */
 public class ListViewContactsAdapter extends BaseAdapter {
 
