@@ -1,8 +1,12 @@
 package intership.dev.contact;
 
 import android.app.ProgressDialog;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
@@ -10,8 +14,10 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * MainActivity
@@ -26,13 +32,75 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
     private DeleteDialog mDeleteDialog;
     private ProgressDialog mProgressDialog;
 
+    private SQLiteDatabase mDatabase = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //loadData();
+
+        getDatabase();
+
+        // loadData from SQLite
         new LoadDataTask().execute();
+
         initialize();
+    }
+
+    /**
+     * Checking if a table is existing in a batabase
+     *
+     * @param database  The database want to check
+     * @param tableName - The table want to check
+     * @return true if it's existing
+     */
+    private boolean isTableExists(SQLiteDatabase database, String tableName) {
+        Cursor cursor = database.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '" + tableName + "'", null);
+        if (cursor != null) {
+            if (cursor.getCount() > 0) {
+                cursor.close();
+                return true;
+            }
+            cursor.close();
+        }
+        return false;
+    }
+
+    /**
+     * Creating database and table tblContact and return new database, if it's existing return it
+     *
+     * @return The database
+     */
+    private SQLiteDatabase getDatabase() {
+        try {
+            mDatabase = openOrCreateDatabase(Environment.getExternalStorageDirectory().getAbsolutePath() + "/ContactApp/contact.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
+            if (mDatabase != null) {
+                // if tblContact is existing, return itself
+                if (isTableExists(mDatabase, "tblContact"))
+                    return mDatabase;
+
+                // if tblContact is not existing, create it
+                mDatabase.setLocale(Locale.getDefault());
+                mDatabase.setVersion(1);
+                String sqlContact = "create table tblContact ("
+                        + "id integer primary key autoincrement,"
+                        + "name text, "
+                        + "description text)";
+                mDatabase.execSQL(sqlContact);
+                Toast.makeText(MainActivity.this, "OK OK", Toast.LENGTH_LONG).show();
+
+                // create some example data
+                ContentValues values = new ContentValues();
+                values.put("name", "Jack Black");
+                values.put("description", "Jack Black's Desciption");
+                if (mDatabase.insert("tblContact", null, values) == -1) {
+                    Toast.makeText(this, "Faild to add record", Toast.LENGTH_SHORT).show();
+                }
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
+        }
+        return mDatabase;
     }
 
     /**
@@ -112,6 +180,9 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
         hbListContacts.setTitle("Contacts");
     }
 
+    /**
+     * Loading beginning data
+     */
     private class LoadDataTask extends AsyncTask<Void, Void, ArrayList<Contact>> {
         @Override
         protected void onPreExecute() {

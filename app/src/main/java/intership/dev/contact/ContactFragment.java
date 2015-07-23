@@ -27,9 +27,12 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_contact, container, false);
+
         // get contact from activity
         mContact = (Contact) getArguments().getSerializable(ContactFragment.EXTRA_CONTACT);
+
         initialize(rootView);
+
         return rootView;
     }
 
@@ -57,7 +60,9 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
         mBtnCancel.setOnTouchListener(this);
     }
 
-
+    /**
+     * Involked when click OK button
+     */
     private void clickOkButton() {
         //TODO when click OK button
     }
