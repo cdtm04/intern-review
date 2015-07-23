@@ -40,10 +40,11 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Creating database and table tblContact and return new database, if it's existing return it
         getDatabase();
 
-        // loadData from SQLite
-        new LoadDataTask().execute();
+        // load first Data from database
+        new LoadFirstDataTask().execute();
 
         initialize();
     }
@@ -91,10 +92,10 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
                 Toast.makeText(MainActivity.this, "OK OK", Toast.LENGTH_LONG).show();
 
                 // create some example data
-                for (int i = 0; i < 30; i++) {
+                for (int i = 0; i < 100; i++) {
                     ContentValues values = new ContentValues();
-                    values.put("name", "Jack Black");
-                    values.put("description", "Jack Black's Desciption");
+                    values.put("name", "Contact " + i);
+                    values.put("description", "Contact " + i + "'s Desciption");
                     if (mDatabase.insert("tblContact", null, values) == -1) {
                         Toast.makeText(this, "Faild to add record", Toast.LENGTH_SHORT).show();
                     }
@@ -126,8 +127,6 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
                         && (mLvContacts.getLastVisiblePosition() - mLvContacts.getHeaderViewsCount() -
                         mLvContacts.getFooterViewsCount()) >= (mListViewContactsAdapter.getCount() - 1)) {
                     //TODO load more listview
-                    loadMoreData();
-                    mListViewContactsAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -136,19 +135,6 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
 
             }
         });
-    }
-
-    /**
-     * Loading more data here
-     */
-    private void loadMoreData() {
-        // example data
-        for (int j = 0; j < 10; j++) {
-            mContacts.add(new Contact("Thomas Anders", "Thomas Anders", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar1)));
-            mContacts.add(new Contact("Valery Meladze", "Valery Meladze", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar2)));
-            mContacts.add(new Contact("Jack Black", "Jack Black", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar3)));
-            mContacts.add(new Contact("Kevin James", "Kevin James", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar4)));
-        }
     }
 
     @Override
@@ -186,19 +172,21 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
     /**
      * Loading beginning data
      */
-    private class LoadDataTask extends AsyncTask<Void, Void, ArrayList<Contact>> {
+    private class LoadFirstDataTask extends AsyncTask<Void, Void, ArrayList<Contact>> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             mProgressDialog = new ProgressDialog(MainActivity.this);
             mProgressDialog.setMessage("Loading data...");
+            mProgressDialog.setCancelable(false);
             mProgressDialog.show();
         }
 
         @Override
         protected ArrayList<Contact> doInBackground(Void... voids) {
             // get data from database
-            Cursor cursor = mDatabase.query("tblContact", null, null, null, null, null, null);
+            mContacts.clear();
+            Cursor cursor = mDatabase.rawQuery("select * from tblContact where id >= 0 AND id < 10", null);
             cursor.moveToFirst();
             while (cursor.isAfterLast() == false) {
                 String name = cursor.getString(1);
@@ -215,12 +203,12 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
         @Override
         protected void onProgressUpdate(Void... values) {
             super.onProgressUpdate(values);
-            mListViewContactsAdapter.notifyDataSetChanged();
         }
 
         @Override
         protected void onPostExecute(ArrayList<Contact> contacts) {
             super.onPostExecute(contacts);
+            mListViewContactsAdapter.notifyDataSetChanged();
             mProgressDialog.dismiss();
         }
     }
