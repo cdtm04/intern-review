@@ -3,6 +3,7 @@ package intership.dev.contact;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,7 +25,7 @@ import java.util.Locale;
 /**
  * MainActivity
  */
-public class MainActivity extends FragmentActivity implements ListViewContactsAdapter.OnClickListViewContacts {
+public class MainActivity extends FragmentActivity {
 
     private SwipeRefreshLayout mSrlRefreshContacts;
     private HeaderBar hbListContacts;
@@ -47,8 +48,8 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
 
         initialize();
 
-        // load first Data from database
-        new LoadingFirstDataTask().execute();
+        // load first Data from database, "true" param means load first rows
+        new LoadingDataTask().execute(true);
     }
 
     /**
@@ -111,29 +112,50 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
     }
 
     /**
-     * initialize views from layout and events
+     * initialize fields
      */
     private void initialize() {
-        // get
+        // views from layout
         mSrlRefreshContacts = (SwipeRefreshLayout) findViewById(R.id.srlRefreshContacts);
         hbListContacts = (HeaderBar) findViewById(R.id.hbListContacts);
         mLvContacts = (ListView) findViewById(R.id.lvContacts);
+
+        // init dialogs
         mDeleteDialog = new DeleteDialog(this);
         mProgressDialog = new ProgressDialog(MainActivity.this);
         mProgressDialog.setCancelable(false);
 
+        // init adapter and set event
         mListViewContactsAdapter = new ListViewContactsAdapter(this, mContacts);
-        mListViewContactsAdapter.setOnClickListViewContacts(this);
+        mListViewContactsAdapter.setOnClickListViewContacts(new ListViewContactsAdapter.OnClickListViewContacts() {
+            @Override
+            public void onClickBtnEdit(int position) {
+                clickBtnEdit(position);
+            }
 
+            @Override
+            public void onClickBtnDelete(int position) {
+                clickBtnDelete(position);
+            }
+        });
+        // set adapter for listview
         mLvContacts.setAdapter(mListViewContactsAdapter);
-        // hanlde event scroll to the last item of listview
+
+        // event: scroll to the last item of listview
         mLvContacts.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
                 if (i == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
                         && (mLvContacts.getLastVisiblePosition() - mLvContacts.getHeaderViewsCount() -
                         mLvContacts.getFooterViewsCount()) >= (mListViewContactsAdapter.getCount() - 1)) {
-                    new LoadingNextDataTask().execute();
+                    // call LoadingNextDataTask to load, if loading the last data show Toast
+                    int numOfTblContactRows = (int) DatabaseUtils.queryNumEntries(mDatabase, "tblContact");
+                    if (numOfTblContactRows == mContacts.size()) {
+                        Toast.makeText(MainActivity.this, "No more contact.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // "false" param means load next rows
+                        new LoadingDataTask().execute(false);
+                    }
                 }
             }
 
@@ -143,18 +165,22 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
             }
         });
 
-        // refresh page
+        // event: refreshing page
         mSrlRefreshContacts.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // call LoadingFirstDataTask to refresh
-                new LoadingFirstDataTask().execute();
+                // call LoadingFirstDataTask to refresh, "true" param means load first rows
+                new LoadingDataTask().execute(true);
             }
         });
     }
 
-    @Override
-    public void onClickBtnEdit(int position) {
+    /**
+     * Involked when edit button of any row had just clicked
+     *
+     * @param position The position of edit button
+     */
+    private void clickBtnEdit(int position) {
         // creating a contactFragment and sending it the contact to show
         ContactFragment contactFragment = new ContactFragment();
         Bundle bundle = new Bundle();
@@ -171,11 +197,31 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
         hbListContacts.setTitle("Contact");
     }
 
-    @Override
-    public void onClickBtnDelete(int position) {
-        //TODO when click the delete button on mLvContacts
+    /**
+     * Involked when delete button of any row had just clicked
+     *
+     * @param position The position of delete button
+     */
+    private void clickBtnDelete(final int position) {
         mDeleteDialog.setMessage("Do you want to <b>delete</b><br><b>" + mContacts.get(position).getName() + "</b>?");
         mDeleteDialog.show();
+        mDeleteDialog.setOnClickButtonDeleteDialog(new DeleteDialog.OnClickButtonDeleteDialog() {
+            @Override
+            public void onOkClick() {
+                if (mDatabase.delete("tblContact", "id=?", new String[]{position + ""}) == -1) {
+                    mContacts.remove(position);
+                    mListViewContactsAdapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(MainActivity.this, "Can't delete " + mContacts.get(position).getName() + ".", Toast.LENGTH_SHORT).show();
+                }
+                mDeleteDialog.dismiss();
+            }
+
+            @Override
+            public void onCancelClick() {
+                mDeleteDialog.dismiss();
+            }
+        });
     }
 
     @Override
@@ -186,9 +232,11 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
     }
 
     /**
-     * Loading beginning data
+     * Loading data from database
+     * if first param = true, it means load the first rows
+     * else first param =false, it means load the next rows
      */
-    private class LoadingFirstDataTask extends AsyncTask<Void, Void, Void> {
+    private class LoadingDataTask extends AsyncTask<Boolean, Void, Void> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -200,62 +248,25 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
-            mContacts.clear();
-            // get 30 first rows from database
-            Cursor cursor = mDatabase.rawQuery("select * from tblContact where id < 30", null);
+        protected Void doInBackground(Boolean... booleans) {
+            String query = null;
+            if (!booleans[0]) {
+                // load next rows
+                query = "select * from tblContact where id >= " + mContacts.size() + " and id <= " + (mContacts.size() + 30);
+            } else {
+                // load first rows
+                query = "select * from tblContact where id < 30";
+                // clear old rows
+                mContacts.clear();
+            }
+            Cursor cursor = mDatabase.rawQuery(query, null);
             cursor.moveToFirst();
             while (cursor.isAfterLast() == false) {
+                int id = cursor.getInt(0);
                 String name = cursor.getString(1);
                 String description = cursor.getString(2);
                 // add to arraylist
-                mContacts.add(new Contact(name, description, BitmapFactory.decodeResource(MainActivity.this.getResources(),
-                        R.drawable.img_avatar1)));
-                cursor.moveToNext();
-            }
-            cursor.close();
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            mListViewContactsAdapter.notifyDataSetChanged();
-            if (mProgressDialog.isShowing()) {
-                mProgressDialog.dismiss();
-            }
-            if (mSrlRefreshContacts.isRefreshing()) {
-                mSrlRefreshContacts.setRefreshing(false);
-            }
-        }
-    }
-
-    /**
-     * Loading next data
-     */
-    private class LoadingNextDataTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mProgressDialog.setMessage("Loading more...");
-            mProgressDialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            // load next 30 rows from database
-            Cursor cursor = mDatabase.rawQuery("select * from tblContact where id >= " + mContacts.size() + " and id <= " + (mContacts.size() + 30), null);
-            cursor.moveToFirst();
-            while (cursor.isAfterLast() == false) {
-                String name = cursor.getString(1);
-                String description = cursor.getString(2);
-                // add to arraylist
-                mContacts.add(new Contact(name, description, BitmapFactory.decodeResource(MainActivity.this.getResources(),
+                mContacts.add(new Contact(id, name, description, BitmapFactory.decodeResource(MainActivity.this.getResources(),
                         R.drawable.img_avatar1)));
                 cursor.moveToNext();
             }
