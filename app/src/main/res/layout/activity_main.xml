@@ -19,9 +19,16 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/hbListContacts">
 
-        <ListView
-            android:id="@+id/lvContacts"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/srlRefreshContacts"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"></ListView>
+
+            android:layout_height="match_parent">
+
+            <ListView
+                android:id="@+id/lvContacts"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"></ListView>
+        </android.support.v4.widget.SwipeRefreshLayout>
     </RelativeLayout>
 </RelativeLayout>
