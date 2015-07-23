@@ -17,6 +17,7 @@ import android.widget.Toast;
  */
 public class ContactFragment extends Fragment implements View.OnTouchListener {
     public final static String EXTRA_CONTACT = "mContact";
+    public final static String EXTRA_POSITION = "mPosition";
 
     private CircleImageView mIvAvatar;
     private TextView mTvUserNameOfContact;
@@ -24,6 +25,8 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
     private Button mBtnSave, mBtnCancel;
 
     private Contact mContact;
+    private int mPosition;
+
     private DeleteDialog mDeleteDialog;
 
     @Override
@@ -32,6 +35,8 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
 
         // get contact from activity
         mContact = (Contact) getArguments().getSerializable(ContactFragment.EXTRA_CONTACT);
+        mPosition = getArguments().getInt(ContactFragment.EXTRA_POSITION);
+
         initialize(rootView);
 
         return rootView;
@@ -69,10 +74,9 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
         String newDesc = mEtDescription.getText() + "";
         if (!newName.equals("") && !newDesc.equals("")) {
             // create new Contact object
-            Contact contact = new Contact(mContact.getId(), newName, newDesc, BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.img_avatar1));
+            Contact contact = new Contact(mContact.getId(), newName, newDesc, mContact.getAvatar());
             // call method updateRow from parent activity
-            ((MainActivity) getActivity()).updateRow(mContact.getId(), contact);
+            ((MainActivity) getActivity()).updateRow(mPosition, contact);
 
             // return main UI
             getActivity().onBackPressed();

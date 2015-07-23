@@ -185,6 +185,7 @@ public class MainActivity extends FragmentActivity {
         ContactFragment contactFragment = new ContactFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable(ContactFragment.EXTRA_CONTACT, mContacts.get(position));
+        bundle.putInt(ContactFragment.EXTRA_POSITION, position);
         contactFragment.setArguments(bundle);
 
         // adding fragment in the layout
@@ -209,7 +210,8 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onOkClick() {
                 // delete row from database and update UI
-                if (mDatabase.delete("tblContact", "id=?", new String[]{position + ""}) == -1) {
+                int delete = mDatabase.delete("tblContact", "id=?", new String[]{mContacts.get(position).getId() + ""});
+                if (delete == -1) {
                     Toast.makeText(MainActivity.this, "Can't delete " + mContacts.get(position).getName() + ".", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(MainActivity.this, mContacts.get(position).getName() + " is deleted.", Toast.LENGTH_SHORT).show();
@@ -251,7 +253,7 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         protected Void doInBackground(Boolean... booleans) {
-            String query = null;
+            String query = "";
             if (!booleans[0]) {
                 // load next rows
                 query = "select * from tblContact where id >= " + mContacts.size() + " and id <= " + (mContacts.size() + 30);
@@ -263,7 +265,7 @@ public class MainActivity extends FragmentActivity {
             }
             Cursor cursor = mDatabase.rawQuery(query, null);
             cursor.moveToFirst();
-            while (cursor.isAfterLast() == false) {
+            while (!cursor.isAfterLast()) {
                 int id = cursor.getInt(0);
                 String name = cursor.getString(1);
                 String description = cursor.getString(2);
@@ -302,19 +304,18 @@ public class MainActivity extends FragmentActivity {
      */
     public void updateRow(int position, Contact contact) {
         ContentValues values = new ContentValues();
-        values.put("id", contact.getId());
         values.put("name", contact.getName());
         values.put("description", contact.getDecription());
 
         // update data in database
-        int update = mDatabase.update("tblContact", values, "id=?", new String[]{position + ""});
+        int update = mDatabase.update("tblContact", values, "id=?", new String[]{contact.getId() + ""});
         if (update == -1) {
             Toast.makeText(this, "Can't update " + contact.getName() + ".", Toast.LENGTH_SHORT).show();
         } else {
+            Toast.makeText(this, contact.getName() + " is updated.", Toast.LENGTH_SHORT).show();
             mContacts.remove(position);
             mContacts.add(position, contact);
             mListViewContactsAdapter.notifyDataSetChanged();
-            Toast.makeText(this, contact.getName() + " is updated.", Toast.LENGTH_SHORT).show();
         }
     }
 }
