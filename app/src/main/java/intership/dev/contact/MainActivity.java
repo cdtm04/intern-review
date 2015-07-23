@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -25,6 +26,7 @@ import java.util.Locale;
  */
 public class MainActivity extends FragmentActivity implements ListViewContactsAdapter.OnClickListViewContacts {
 
+    private SwipeRefreshLayout mSrlRefreshContacts;
     private HeaderBar hbListContacts;
     private ListView mLvContacts;
     private ListViewContactsAdapter mListViewContactsAdapter;
@@ -43,10 +45,10 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
         // Creating database and table tblContact and return new database, if it's existing return it
         getDatabase();
 
-        // load first Data from database
-        new LoadFirstDataTask().execute();
-
         initialize();
+
+        // load first Data from database
+        new LoadingFirstDataTask().execute();
     }
 
     /**
@@ -85,7 +87,7 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
                 mDatabase.setLocale(Locale.getDefault());
                 mDatabase.setVersion(1);
                 String sqlContact = "create table tblContact ("
-                        + "id integer primary key autoincrement,"
+                        + "id integer,"
                         + "name text, "
                         + "description text)";
                 mDatabase.execSQL(sqlContact);
@@ -94,6 +96,7 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
                 // create some example data
                 for (int i = 0; i < 100; i++) {
                     ContentValues values = new ContentValues();
+                    values.put("id", i);
                     values.put("name", "Contact " + i);
                     values.put("description", "Contact " + i + "'s Desciption");
                     if (mDatabase.insert("tblContact", null, values) == -1) {
@@ -108,12 +111,16 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
     }
 
     /**
-     * initialize views from layout
+     * initialize views from layout and events
      */
     private void initialize() {
+        // get
+        mSrlRefreshContacts = (SwipeRefreshLayout) findViewById(R.id.srlRefreshContacts);
         hbListContacts = (HeaderBar) findViewById(R.id.hbListContacts);
         mLvContacts = (ListView) findViewById(R.id.lvContacts);
         mDeleteDialog = new DeleteDialog(this);
+        mProgressDialog = new ProgressDialog(MainActivity.this);
+        mProgressDialog.setCancelable(false);
 
         mListViewContactsAdapter = new ListViewContactsAdapter(this, mContacts);
         mListViewContactsAdapter.setOnClickListViewContacts(this);
@@ -126,13 +133,22 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
                 if (i == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
                         && (mLvContacts.getLastVisiblePosition() - mLvContacts.getHeaderViewsCount() -
                         mLvContacts.getFooterViewsCount()) >= (mListViewContactsAdapter.getCount() - 1)) {
-                    //TODO load more listview
+                    new LoadingNextDataTask().execute();
                 }
             }
 
             @Override
             public void onScroll(AbsListView absListView, int i, int i1, int i2) {
 
+            }
+        });
+
+        // refresh page
+        mSrlRefreshContacts.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // call LoadingFirstDataTask to refresh
+                new LoadingFirstDataTask().execute();
             }
         });
     }
@@ -172,21 +188,22 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
     /**
      * Loading beginning data
      */
-    private class LoadFirstDataTask extends AsyncTask<Void, Void, ArrayList<Contact>> {
+    private class LoadingFirstDataTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mProgressDialog = new ProgressDialog(MainActivity.this);
-            mProgressDialog.setMessage("Loading data...");
-            mProgressDialog.setCancelable(false);
-            mProgressDialog.show();
+            // if mSrlRefreshContacts is refreshing, don't need mProgressDialog to show
+            if (!mSrlRefreshContacts.isRefreshing()) {
+                mProgressDialog.setMessage("Loading data...");
+                mProgressDialog.show();
+            }
         }
 
         @Override
-        protected ArrayList<Contact> doInBackground(Void... voids) {
-            // get data from database
+        protected Void doInBackground(Void... voids) {
             mContacts.clear();
-            Cursor cursor = mDatabase.rawQuery("select * from tblContact where id >= 0 AND id < 10", null);
+            // get 30 first rows from database
+            Cursor cursor = mDatabase.rawQuery("select * from tblContact where id < 30", null);
             cursor.moveToFirst();
             while (cursor.isAfterLast() == false) {
                 String name = cursor.getString(1);
@@ -206,11 +223,61 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Contact> contacts) {
-            super.onPostExecute(contacts);
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
             mListViewContactsAdapter.notifyDataSetChanged();
-            mProgressDialog.dismiss();
+            if (mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
+            }
+            if (mSrlRefreshContacts.isRefreshing()) {
+                mSrlRefreshContacts.setRefreshing(false);
+            }
+        }
+    }
+
+    /**
+     * Loading next data
+     */
+    private class LoadingNextDataTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDialog.setMessage("Loading more...");
+            mProgressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            // load next 30 rows from database
+            Cursor cursor = mDatabase.rawQuery("select * from tblContact where id >= " + mContacts.size() + " and id <= " + (mContacts.size() + 30), null);
+            cursor.moveToFirst();
+            while (cursor.isAfterLast() == false) {
+                String name = cursor.getString(1);
+                String description = cursor.getString(2);
+                // add to arraylist
+                mContacts.add(new Contact(name, description, BitmapFactory.decodeResource(MainActivity.this.getResources(),
+                        R.drawable.img_avatar1)));
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            mListViewContactsAdapter.notifyDataSetChanged();
+            if (mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
+            }
+            if (mSrlRefreshContacts.isRefreshing()) {
+                mSrlRefreshContacts.setRefreshing(false);
+            }
         }
     }
 }
-
