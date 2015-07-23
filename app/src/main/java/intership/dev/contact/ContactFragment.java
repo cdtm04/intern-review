@@ -1,6 +1,5 @@
 package intership.dev.contact;
 
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -35,6 +34,7 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
 
         // get contact from activity
         mContact = (Contact) getArguments().getSerializable(ContactFragment.EXTRA_CONTACT);
+        // get position in listview from activity
         mPosition = getArguments().getInt(ContactFragment.EXTRA_POSITION);
 
         initialize(rootView);
@@ -75,6 +75,7 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
         if (!newName.equals("") && !newDesc.equals("")) {
             // create new Contact object
             Contact contact = new Contact(mContact.getId(), newName, newDesc, mContact.getAvatar());
+
             // call method updateRow from parent activity
             ((MainActivity) getActivity()).updateRow(mPosition, contact);
 

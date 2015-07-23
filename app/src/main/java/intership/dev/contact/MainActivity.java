@@ -13,9 +13,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.view.View;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -30,6 +28,7 @@ public class MainActivity extends FragmentActivity {
     public final String COL_ID = "id";
     public final String COL_NAME = "name";
     public final String COL_DESCRIPTION = "description";
+    public final String COL_AVATAR = "avatar";
 
     private SwipeRefreshLayout mSrlRefreshContacts;
     private HeaderBar hbListContacts;
@@ -47,7 +46,7 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Creating database and table tblContact and return new database, if it's existing return it
+        // Creating database and table tblContact and return new database, if it's existing return itself
         createDatabase();
 
         initialize();
@@ -76,7 +75,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     /**
-     * Creating database and table tblContact and return new database, if it's existing return it
+     * Creating database and table tblContact and return new database, if it's existing return itself
      *
      * @return The database
      */
@@ -94,7 +93,8 @@ public class MainActivity extends FragmentActivity {
                 String sqlContact = "create table " + TABLE_CONTACT + " ("
                         + COL_ID + " integer,"
                         + COL_NAME + " text, "
-                        + COL_DESCRIPTION + " text)";
+                        + COL_DESCRIPTION + " text, "
+                        + COL_AVATAR + " blob)";
                 mDatabase.execSQL(sqlContact);
                 Toast.makeText(MainActivity.this, "OK OK", Toast.LENGTH_LONG).show();
 
@@ -104,6 +104,8 @@ public class MainActivity extends FragmentActivity {
                     values.put(COL_ID, i);
                     values.put(COL_NAME, "Contact " + i);
                     values.put(COL_DESCRIPTION, "Contact " + i + "'s Desciption");
+                    values.put(COL_AVATAR, DbBitmapUtility.getBytes(BitmapFactory.decodeResource(getResources(),
+                            R.drawable.img_avatar1)));
                     if (mDatabase.insert(TABLE_CONTACT, null, values) == -1) {
                         Toast.makeText(this, "Faild to add record", Toast.LENGTH_SHORT).show();
                     }
@@ -273,9 +275,9 @@ public class MainActivity extends FragmentActivity {
                 int id = cursor.getInt(0);
                 String name = cursor.getString(1);
                 String description = cursor.getString(2);
+                Bitmap avatar = DbBitmapUtility.getImage(cursor.getBlob(3));
                 // add to arraylist
-                mContacts.add(new Contact(id, name, description, BitmapFactory.decodeResource(MainActivity.this.getResources(),
-                        R.drawable.img_avatar1)));
+                mContacts.add(new Contact(id, name, description, avatar));
                 cursor.moveToNext();
             }
             cursor.close();
