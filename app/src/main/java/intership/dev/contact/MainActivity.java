@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -90,11 +91,13 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
                 Toast.makeText(MainActivity.this, "OK OK", Toast.LENGTH_LONG).show();
 
                 // create some example data
-                ContentValues values = new ContentValues();
-                values.put("name", "Jack Black");
-                values.put("description", "Jack Black's Desciption");
-                if (mDatabase.insert("tblContact", null, values) == -1) {
-                    Toast.makeText(this, "Faild to add record", Toast.LENGTH_SHORT).show();
+                for (int i = 0; i < 30; i++) {
+                    ContentValues values = new ContentValues();
+                    values.put("name", "Jack Black");
+                    values.put("description", "Jack Black's Desciption");
+                    if (mDatabase.insert("tblContact", null, values) == -1) {
+                        Toast.makeText(this, "Faild to add record", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         } catch (Exception e) {
@@ -194,13 +197,18 @@ public class MainActivity extends FragmentActivity implements ListViewContactsAd
 
         @Override
         protected ArrayList<Contact> doInBackground(Void... voids) {
-            // example data
-            for (int j = 0; j < 10; j++) {
-                mContacts.add(new Contact("Thomas Anders", "Thomas Anders", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar1)));
-                mContacts.add(new Contact("Valery Meladze", "Valery Meladze", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar2)));
-                mContacts.add(new Contact("Jack Black", "Jack Black", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar3)));
-                mContacts.add(new Contact("Kevin James", "Kevin James", BitmapFactory.decodeResource(getResources(), R.drawable.img_avatar4)));
+            // get data from database
+            Cursor cursor = mDatabase.query("tblContact", null, null, null, null, null, null);
+            cursor.moveToFirst();
+            while (cursor.isAfterLast() == false) {
+                String name = cursor.getString(1);
+                String description = cursor.getString(2);
+                // add to arraylist
+                mContacts.add(new Contact(name, description, BitmapFactory.decodeResource(MainActivity.this.getResources(),
+                        R.drawable.img_avatar1)));
+                cursor.moveToNext();
             }
+            cursor.close();
             return null;
         }
 
