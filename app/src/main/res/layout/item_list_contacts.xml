@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/listcontacts.item.layout_height">
 
-    <intership.dev.contact.CircleImageView
+    <intership.dev.contact.utils.CircleImageView
         android:id="@+id/imgAvatar"
         android:layout_width="@dimen/listcontacts.item.circleimageview.avatar_size"
         android:layout_height="@dimen/listcontacts.item.circleimageview.avatar_size"

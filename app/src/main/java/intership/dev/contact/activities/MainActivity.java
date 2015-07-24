@@ -1,14 +1,12 @@
-package intership.dev.contact;
+package intership.dev.contact.activities;
 
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
@@ -20,6 +18,14 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
+
+import intership.dev.contact.models.Contact;
+import intership.dev.contact.fragments.ContactFragment;
+import intership.dev.contact.utils.DbBitmapUtility;
+import intership.dev.contact.utils.DeleteDialog;
+import intership.dev.contact.utils.HeaderBar;
+import intership.dev.contact.utils.ListViewContactsAdapter;
+import intership.dev.contact.R;
 
 /**
  * MainActivity
@@ -82,9 +88,8 @@ public class MainActivity extends FragmentActivity {
      */
     private SQLiteDatabase createDatabase() {
         try {
-            File rootPath = getExternalFilesDir(null);
+            File rootPath = this.getExternalFilesDir(null);
             mDatabase = openOrCreateDatabase(rootPath.getAbsolutePath() + "/contact.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
-            String a = rootPath.getAbsolutePath() + "/contact.db";
             if (mDatabase != null) {
                 // if tblContact is existing, return itself
                 if (isTableExists(mDatabase, TABLE_CONTACT))
@@ -114,6 +119,8 @@ public class MainActivity extends FragmentActivity {
                     }
                 }
             }
+        } catch (NullPointerException e) {
+            Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
         }
@@ -161,6 +168,7 @@ public class MainActivity extends FragmentActivity {
                     //int numOfTblContactRows = (int) DatabaseUtils.queryNumEntries(mDatabase, TABLE_CONTACT);
                     Cursor cursor = mDatabase.query(TABLE_CONTACT, null, null, null, null, null, null);
                     int numOfTblContactRows = cursor.getCount();
+                    cursor.close();
                     if (numOfTblContactRows == mContacts.size()) {
                         Toast.makeText(MainActivity.this, "No more contact.", Toast.LENGTH_SHORT).show();
                     } else {
@@ -264,7 +272,7 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         protected Void doInBackground(Boolean... booleans) {
-            String query = "";
+            String query;
             if (!booleans[0]) {
                 // load next rows
                 int lastLoadedId = mContacts.get(mContacts.size() - 1).getId();

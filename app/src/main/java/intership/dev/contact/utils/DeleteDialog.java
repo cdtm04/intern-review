@@ -1,4 +1,4 @@
-package intership.dev.contact;
+package intership.dev.contact.utils;
 
 
 import android.app.Dialog;
@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
+
+import intership.dev.contact.R;
 
 /**
  * Custom dialog for application

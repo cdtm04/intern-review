@@ -6,12 +6,12 @@
     android:background="@color/white"
     tools:context=".MainActivity">
 
-    <intership.dev.contact.HeaderBar
+    <intership.dev.contact.utils.HeaderBar
         android:id="@+id/hbListContacts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         custom:back_icon="@drawable/ic_back"
-        custom:header_title="@string/headerbar.title.contacts"></intership.dev.contact.HeaderBar>
+        custom:header_title="@string/headerbar.title.contacts" />
 
     <RelativeLayout
         android:id="@+id/rlContactFragment"
@@ -27,7 +27,7 @@
             <ListView
                 android:id="@+id/lvContacts"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"></ListView>
+                android:layout_height="match_parent" />
         </android.support.v4.widget.SwipeRefreshLayout>
     </RelativeLayout>
 </RelativeLayout>

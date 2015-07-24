@@ -1,4 +1,4 @@
-package intership.dev.contact;
+package intership.dev.contact.utils;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import intership.dev.contact.R;
+import intership.dev.contact.models.Contact;
+import intership.dev.contact.utils.CircleImageView;
 
 /**
  * Adapter manage the main listview
@@ -57,7 +61,7 @@ public class ListViewContactsAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        ViewHolder viewHolder = null;
+        ViewHolder viewHolder;
         if (view == null) {
             view = LayoutInflater.from(mContext).inflate(R.layout.item_list_contacts, viewGroup, false);
 

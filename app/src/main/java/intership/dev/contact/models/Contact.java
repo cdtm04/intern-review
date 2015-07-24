@@ -1,4 +1,4 @@
-package intership.dev.contact;
+package intership.dev.contact.models;
 
 import android.graphics.Bitmap;
 

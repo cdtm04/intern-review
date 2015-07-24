@@ -1,4 +1,4 @@
-package intership.dev.contact;
+package intership.dev.contact.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,8 +13,8 @@ public class DbBitmapUtility {
     /**
      * Convert from bitmap to byte array
      *
-     * @param bitmap
-     * @return
+     * @param bitmap The Bitmap
+     * @return The byte array
      */
     public static byte[] getBytes(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -25,8 +25,8 @@ public class DbBitmapUtility {
     /**
      * convert from byte array to bitmap
      *
-     * @param image
-     * @return
+     * @param image The byte array
+     * @return The Bitmap
      */
     public static Bitmap getImage(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
