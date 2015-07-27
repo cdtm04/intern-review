@@ -39,7 +39,7 @@
             </RelativeLayout>
 
             <EditText
-                android:id="@+id/etName"
+                android:id="@+id/edtName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="23dp"
@@ -49,7 +49,7 @@
                 android:textSize="@dimen/fragmentcontact.textview.text_size" />
 
             <EditText
-                android:id="@+id/etDescription"
+                android:id="@+id/edtDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="60dp"

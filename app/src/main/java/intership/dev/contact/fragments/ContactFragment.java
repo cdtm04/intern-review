@@ -26,7 +26,7 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
 
     private CircleImageView mIvAvatar;
     private TextView mTvUserNameOfContact;
-    private EditText mEtName, mEtDescription;
+    private EditText mEdtName, mEdtDescription;
     private Button mBtnSave, mBtnCancel;
 
     private Contact mContact;
@@ -57,8 +57,8 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
         // get
         mIvAvatar = (CircleImageView) rootView.findViewById(R.id.ivAvatar);
         mTvUserNameOfContact = (TextView) rootView.findViewById(R.id.tvUserNameOfContact);
-        mEtName = (EditText) rootView.findViewById(R.id.etName);
-        mEtDescription = (EditText) rootView.findViewById(R.id.etDescription);
+        mEdtName = (EditText) rootView.findViewById(R.id.edtName);
+        mEdtDescription = (EditText) rootView.findViewById(R.id.edtDescription);
         mBtnSave = (Button) rootView.findViewById(R.id.btnSave);
         mBtnCancel = (Button) rootView.findViewById(R.id.btnCancel);
         mDeleteDialog = new DeleteDialog(getActivity());
@@ -66,8 +66,8 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
         // set
         mIvAvatar.setImageBitmap(mContact.getAvatar());
         mTvUserNameOfContact.setText(mContact.getName());
-        mEtName.setText(mContact.getName());
-        mEtDescription.setText(mContact.getDecription());
+        mEdtName.setText(mContact.getName());
+        mEdtDescription.setText(mContact.getDecription());
         mBtnSave.setOnTouchListener(this);
         mBtnCancel.setOnTouchListener(this);
     }
@@ -76,8 +76,8 @@ public class ContactFragment extends Fragment implements View.OnTouchListener {
      * Involked when click OK button
      */
     private void clickOkButton() {
-        String newName = mEtName.getText() + "";
-        String newDesc = mEtDescription.getText() + "";
+        String newName = mEdtName.getText() + "";
+        String newDesc = mEdtDescription.getText() + "";
         if (!newName.equals("") && !newDesc.equals("")) {
             // create new Contact object
             Contact contact = new Contact(mContact.getId(), newName, newDesc, mContact.getAvatar());
